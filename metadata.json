@@ -1,0 +1,5 @@
+{
+  "name": "Cantina Sales Tracker",
+  "description": "A web application to track product sales for a school cantina. It allows users to view products, search for them, and record sales, updating stock and revenue in real-time.",
+  "requestFramePermissions": []
+}
