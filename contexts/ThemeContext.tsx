@@ -13,15 +13,20 @@ interface ThemeProviderProps {
   children: ReactNode;
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>('light');
+const getInitialTheme = (): Theme => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        const storedTheme = localStorage.getItem('theme') as Theme | null;
+        // Se um tema estiver salvo e for válido, use-o
+        if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark')) {
+            return storedTheme;
+        }
+    }
+    // Caso contrário, o padrão é o modo escuro
+    return 'dark';
+};
 
-  useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') as Theme | null;
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const defaultTheme = storedTheme || (prefersDark ? 'dark' : 'light');
-    setTheme(defaultTheme);
-  }, []);
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
     if (theme === 'dark') {
