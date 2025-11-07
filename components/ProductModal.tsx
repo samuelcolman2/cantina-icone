@@ -3,8 +3,6 @@ import { ref, push, serverTimestamp, update } from 'firebase/database';
 import { db } from '../firebase/config';
 import { ProductCategory, Product } from '../types';
 import { CloseIcon, CameraIcon } from './Icons';
-import ImageSourceModal from './ImageSourceModal';
-import ImageGenerationModal from './ImageGenerationModal';
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -23,9 +21,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
   const [selectedCategory, setSelectedCategory] = useState('');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [isImageSourceModalOpen, setIsImageSourceModalOpen] = useState(false);
-  const [isImageGenerationModalOpen, setIsImageGenerationModalOpen] = useState(false);
 
   const isEditing = !!productToEdit;
 
@@ -201,22 +196,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
     if (fileInputRef.current) {
         fileInputRef.current.value = ''; // Reset file input to allow re-selection of the same file
     }
-    setIsImageSourceModalOpen(true);
-  };
-
-  const handleSelectUpload = () => {
-    setIsImageSourceModalOpen(false);
     fileInputRef.current?.click();
-  };
-
-  const handleSelectGenerate = () => {
-    setIsImageSourceModalOpen(false);
-    setIsImageGenerationModalOpen(true);
-  };
-
-  const handleAiImageGenerated = (base64Image: string) => {
-    setPhotoBase64(`data:image/png;base64,${base64Image}`);
-    setIsImageGenerationModalOpen(false);
   };
 
   return (
@@ -320,23 +300,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
                 <style>{`.input-style { appearance: none; border: 1px solid #cbd5e1; background-color: white; border-radius: 0.5rem; width: 100%; padding: 0.5rem 0.75rem; color: #1e293b; line-height: 1.5; } .dark .input-style { border-color: #475569; background-color: #334155; color: #f1f5f9; } .input-style::placeholder { color: #94a3b8; } .input-style:focus { outline: none; box-shadow: 0 0 0 2px #fb923c; border-color: #f97316; }`}</style>
             </div>
         </div>
-        
-        {isImageSourceModalOpen && (
-            <ImageSourceModal
-                isOpen={isImageSourceModalOpen}
-                onClose={() => setIsImageSourceModalOpen(false)}
-                onSelectUpload={handleSelectUpload}
-                onSelectGenerate={handleSelectGenerate}
-            />
-        )}
-        {isImageGenerationModalOpen && (
-            <ImageGenerationModal
-                isOpen={isImageGenerationModalOpen}
-                onClose={() => setIsImageGenerationModalOpen(false)}
-                onImageGenerated={handleAiImageGenerated}
-                productName={productName.toUpperCase() || 'ESTE PRODUTO'}
-            />
-        )}
     </>
   );
 };
