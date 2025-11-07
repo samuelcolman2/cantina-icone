@@ -1,41 +1,137 @@
-import React, { useState, useEffect } from 'react';
-import { ref, push, serverTimestamp } from 'firebase/database';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { ref, push, serverTimestamp, update } from 'firebase/database';
 import { db } from '../firebase/config';
-import { ProductCategory } from '../types';
-import { CloseIcon } from './Icons';
+import { ProductCategory, Product } from '../types';
+import { CloseIcon, CameraIcon } from './Icons';
 
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   categories: ProductCategory[];
+  productToEdit?: Product | null;
 }
 
-const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories }) => {
+const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories, productToEdit }) => {
   const [productName, setProductName] = useState('');
-  const [displayPrice, setDisplayPrice] = useState(''); // Formatted string for display
-  const [numericPrice, setNumericPrice] = useState<number | null>(null); // Actual number for DB
-  const [productStock, setProductStock] = useState('');
+  const [displayPrice, setDisplayPrice] = useState('');
+  const [numericPrice, setNumericPrice] = useState<number | null>(null);
+  const [photoBase64, setPhotoBase64] = useState<string | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const isEditing = !!productToEdit;
+
+  const formatPrice = (value: number | null) => {
+    if (value === null) return '';
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(value);
+  }
+
   useEffect(() => {
     if (isOpen) {
-      // Reset form state when modal opens
-      setProductName('');
-      setDisplayPrice('');
-      setNumericPrice(null);
-      setProductStock('');
+      if (isEditing) {
+        setProductName(productToEdit.name);
+        setNumericPrice(productToEdit.price);
+        setDisplayPrice(formatPrice(productToEdit.price));
+        setPhotoBase64(productToEdit.image || null);
+        setSelectedCategory(productToEdit.category);
+      } else {
+        setProductName('');
+        setDisplayPrice('');
+        setNumericPrice(null);
+        setPhotoBase64(null);
+        setSelectedCategory(categories.length > 0 ? categories[0] : '');
+      }
       setFeedback(null);
       setIsLoading(false);
-      // Set default category if available
-      if (categories.length > 0) {
-        setSelectedCategory(categories[0]);
-      } else {
-        setSelectedCategory('');
-      }
+      setIsCompressing(false);
     }
-  }, [isOpen, categories]);
+  }, [isOpen, productToEdit, categories]);
+
+  const compressImage = (file: File, maxSizeInBytes: number): Promise<string> => {
+    const MAX_WIDTH = 1024;
+    const MAX_HEIGHT = 1024;
+
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            if (!event.target?.result) {
+                return reject(new Error("Falha ao ler o arquivo de imagem."));
+            }
+            const img = new Image();
+            img.src = event.target.result as string;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return reject(new Error('Não foi possível obter o contexto do canvas.'));
+
+                let { width, height } = img;
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                let quality = 0.9;
+                let dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+                while (dataUrl.length > maxSizeInBytes && quality > 0.1) {
+                    quality -= 0.05;
+                    dataUrl = canvas.toDataURL('image/jpeg', quality);
+                }
+                
+                if (dataUrl.length > maxSizeInBytes) {
+                   return reject(new Error(`A imagem é muito grande mesmo após compressão. Tente uma menor.`));
+                }
+
+                resolve(dataUrl);
+            };
+            img.onerror = () => reject(new Error("Falha ao carregar a imagem para processamento."));
+        };
+        reader.onerror = () => reject(new Error("Falha ao ler o arquivo."));
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setFeedback(null);
+      setIsCompressing(true);
+
+      if (file.size > 10 * 1024 * 1024) { 
+          setFeedback({ type: 'error', message: 'A imagem é muito grande. Escolha um arquivo menor que 10MB.' });
+          setIsCompressing(false);
+          return;
+      }
+
+      try {
+          const TARGET_SIZE_IN_BYTES = 975 * 1024; // ~975 KB to stay under 1MB
+          const compressedBase64 = await compressImage(file, TARGET_SIZE_IN_BYTES);
+          setPhotoBase64(compressedBase64);
+      } catch (error: any) {
+          console.error("Image compression failed", error);
+          setFeedback({ type: 'error', message: error.message || 'Erro ao processar a imagem. Tente novamente.' });
+      } finally {
+          setIsCompressing(false);
+      }
+  };
 
   if (!isOpen) return null;
 
@@ -48,20 +144,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
     }
     const numberValue = parseInt(rawValue, 10) / 100;
     setNumericPrice(numberValue);
-    
-    const formattedValue = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(numberValue);
-
-    setDisplayPrice(formattedValue);
+    setDisplayPrice(formatPrice(numberValue));
   };
   
-  const handleCreateProduct = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback(null);
-    if (!productName.trim() || numericPrice === null || !productStock || !selectedCategory) {
-        setFeedback({ type: 'error', message: 'Por favor, preencha todos os campos.' });
+    if (!productName.trim() || numericPrice === null || !selectedCategory) {
+        setFeedback({ type: 'error', message: 'Por favor, preencha todos os campos obrigatórios.' });
         return;
     }
     if (numericPrice <= 0) {
@@ -69,24 +159,36 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
         return;
     }
     setIsLoading(true);
+
+    const formData = {
+        name: productName.trim(),
+        price: numericPrice,
+        image: photoBase64,
+        category: selectedCategory,
+    };
+
     try {
-        const productsRef = ref(db, 'products');
-        await push(productsRef, {
-            name: productName.trim(),
-            price: numericPrice,
-            stock: parseInt(productStock, 10),
-            category: selectedCategory,
-            sold: 0,
-            image: null,
-            createdAt: serverTimestamp(),
-        });
-        setFeedback({ type: 'success', message: 'Produto criado com sucesso!' });
+        if (isEditing) {
+            const productRef = ref(db, `products/${productToEdit.id}`);
+            await update(productRef, { ...formData, updatedAt: serverTimestamp() });
+            setFeedback({ type: 'success', message: 'Produto atualizado com sucesso!' });
+        } else {
+            const productsRef = ref(db, 'products');
+            await push(productsRef, { 
+                ...formData,
+                stock: 0,
+                sold: 0,
+                createdAt: serverTimestamp() 
+            });
+            setFeedback({ type: 'success', message: 'Produto criado com sucesso!' });
+        }
+        
         setTimeout(() => {
             onClose();
-        }, 1500); // Close modal on success
+        }, 1500);
     } catch (error) {
-        console.error("Error creating product:", error);
-        setFeedback({ type: 'error', message: 'Erro ao criar produto. Tente novamente.' });
+        console.error("Error saving product:", error);
+        setFeedback({ type: 'error', message: 'Erro ao salvar produto. Tente novamente.' });
         setIsLoading(false);
     }
   };
@@ -110,21 +212,60 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
               <CloseIcon />
             </button>
             
-            <h2 className="text-2xl font-bold text-slate-800 mb-6">Criar Novo Produto</h2>
-            <form onSubmit={handleCreateProduct} className="space-y-4">
+            <h2 className="text-2xl font-bold text-slate-800 mb-6">{isEditing ? 'Editar Produto' : 'Criar Novo Produto'}</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="product-name">Nome do Produto</label>
                   <input id="product-name" type="text" value={productName} onChange={(e) => setProductName(e.target.value)} required className="input-style" placeholder="Ex: Coxinha de Frango"/>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="product-price">Preço</label>
-                        <input id="product-price" type="text" value={displayPrice} onChange={handlePriceChange} required className="input-style" placeholder="R$ 0,00"/>
-                    </div>
-                    <div>
-                        <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="product-stock">Estoque Inicial</label>
-                        <input id="product-stock" type="number" min="0" step="1" value={productStock} onChange={(e) => setProductStock(e.target.value)} required className="input-style" placeholder="Ex: 50"/>
+                <div>
+                    <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="product-price">Preço</label>
+                    <input id="product-price" type="text" value={displayPrice} onChange={handlePriceChange} required className="input-style" placeholder="R$ 0,00"/>
+                </div>
+
+                <div>
+                    <label className="block text-slate-600 text-sm font-medium mb-1">Imagem do Produto (Opcional)</label>
+                    <div className="mt-1 flex items-center gap-4">
+                        <div className="relative w-24 h-24 rounded-lg bg-slate-100 border border-slate-300 flex items-center justify-center overflow-hidden shrink-0">
+                            {photoBase64 ? (
+                                <img src={photoBase64} alt="Prévia do produto" className="w-full h-full object-cover" />
+                            ) : (
+                                <CameraIcon className="w-10 h-10 text-slate-400" />
+                            )}
+                            {isCompressing && (
+                                <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white">
+                                    <div className="w-8 h-8 border-4 border-dashed rounded-full animate-spin border-white"></div>
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                accept="image/png, image/jpeg, image/webp"
+                                className="hidden"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isCompressing}
+                                className="py-2 px-4 rounded-md text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
+                            >
+                                {isCompressing ? 'Processando...' : 'Escolher Imagem'}
+                            </button>
+                            {photoBase64 && (
+                                <button
+                                    type="button"
+                                    onClick={() => setPhotoBase64(null)}
+                                    className="ml-2 text-sm text-red-600 hover:underline"
+                                >
+                                    Remover
+                                </button>
+                            )}
+                            <p className="text-xs text-slate-500 mt-1">A imagem será otimizada para &lt;1MB.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -146,7 +287,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
                 )}
 
                 <button type="submit" disabled={isLoading || categories.length === 0} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded-md focus:outline-none focus:shadow-outline transition-colors duration-200 disabled:opacity-50">
-                    {isLoading ? 'Criando...' : 'Criar Produto'}
+                    {isLoading ? 'Salvando...' : (isEditing ? 'Salvar Alterações' : 'Criar Produto')}
                 </button>
             </form>
             <style>{`.input-style { appearance: none; border: 1px solid #cbd5e1; background-color: white; border-radius: 0.5rem; width: 100%; padding: 0.5rem 0.75rem; color: #1e293b; line-height: 1.5; } .input-style::placeholder { color: #94a3b8; } .input-style:focus { outline: none; box-shadow: 0 0 0 2px #fb923c; border-color: #f97316; }`}</style>

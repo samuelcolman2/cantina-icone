@@ -1,4 +1,3 @@
-
 export type ProductCategory = string;
 export type UserRole = 'admin' | 'seller';
 
@@ -16,4 +15,14 @@ export interface UserProfile {
   uid: string;
   email: string | null;
   role: UserRole;
+  displayName: string | null;
+  photoURL: string | null;
+}
+
+export interface SaleLogEntry {
+  id: string;
+  productId: string;
+  productName: string;
+  price: number;
+  timestamp: number;
 }
