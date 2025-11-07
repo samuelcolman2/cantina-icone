@@ -293,7 +293,7 @@ const App: React.FC = () => {
   if (loading) {
     return <Spinner fullScreen />;
   }
-
+  
   if (!user) {
     return <Login />;
   }

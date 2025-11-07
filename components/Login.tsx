@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { EyeIcon, EyeSlashIcon, UserIcon } from './Icons';
 import RegisterModal from './RegisterModal';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 interface QuickLoginUser {
   email: string;
@@ -18,6 +18,7 @@ const Login: React.FC = () => {
   const [isQuickLoginLoading, setIsQuickLoginLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
   const [quickLoginUser, setQuickLoginUser] = useState<QuickLoginUser | null>(null);
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -44,19 +45,8 @@ const Login: React.FC = () => {
     try {
       await login(email, password, rememberMe);
     } catch (err: any) {
-      console.error(err.code, err.message);
-      switch (err.code) {
-        case 'auth/invalid-credential':
-        case 'auth/wrong-password':
-        case 'auth/user-not-found':
-          setError('E-mail ou senha inválidos.');
-          break;
-        case 'auth/invalid-email':
-          setError('O formato do e-mail é inválido.');
-          break;
-        default:
-          setError('Ocorreu um erro. Tente novamente.');
-      }
+      console.error(err);
+      setError('E-mail ou senha inválidos.');
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +58,7 @@ const Login: React.FC = () => {
       setIsQuickLoginLoading(true);
       try {
         await login(quickLoginUser.email, quickLoginUser.password, true);
-        // On success, the onAuthStateChanged listener will handle navigation
+        // On success, the main App component will re-render due to user state change
       } catch (err: any) {
         // This can happen if the password was changed elsewhere.
         setError('As credenciais salvas são inválidas. Por favor, entre manualmente.');
@@ -193,9 +183,9 @@ const Login: React.FC = () => {
                       </div>
 
                       <div className="text-sm">
-                          <a href="#" className="font-medium text-blue-600 hover:underline">
+                          <button type="button" onClick={() => setIsForgotPasswordModalOpen(true)} className="font-medium text-blue-600 hover:underline">
                               Esqueceu a senha?
-                          </a>
+                          </button>
                       </div>
                   </div>
                   
@@ -224,6 +214,7 @@ const Login: React.FC = () => {
         </main>
       </div>
       <RegisterModal isOpen={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} />
+      <ForgotPasswordModal isOpen={isForgotPasswordModalOpen} onClose={() => setIsForgotPasswordModalOpen(false)} />
     </>
   );
 };

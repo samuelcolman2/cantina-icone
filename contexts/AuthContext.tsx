@@ -1,18 +1,40 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { User, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 import { ref, get, set, serverTimestamp, update } from 'firebase/database';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, db, firestore } from '../firebase/config';
-import { UserProfile, UserRole } from '../types';
+import { db, firestore } from '../firebase/config';
+import { UserProfile } from '../types';
+
+// ===================================
+// HELPERS & CONFIG
+// ===================================
+
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqmPyYR6D7eZjreva31DPo9o82zFbKrcBguLms51bzJgcNMI2oqeO4WDwR-oGU4_dJ/exec';
+
+const sanitizeEmail = (email: string): string => {
+  return email.replace(/\./g, ',').replace(/[#$[\]]/g, '_');
+};
+
+const sha256client = async (str: string): Promise<string> => {
+  const textAsBuffer = new TextEncoder().encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', textAsBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
+
+// ===================================
+// CONTEXT DEFINITION
+// ===================================
 
 export interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
   login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
   logout: () => Promise<void>;
-  createUser: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   updateUserProfile: (data: { displayName?: string; photoBase64?: string }) => Promise<void>;
+  requestPasswordResetCode: (email: string) => Promise<{ ok: boolean; msg: string }>;
+  confirmPasswordResetWithCode: (email: string, code: string, newPassword: string) => Promise<{ ok: boolean; msg: string }>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,96 +48,89 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
-      if (firebaseUser && firebaseUser.email) {
-        try {
-          // Fetch user data from RTDB, which now includes the role
-          const userDbRef = ref(db, `users/${firebaseUser.uid}`);
-          const dbSnapshot = await get(userDbRef);
-          const dbData = dbSnapshot.exists() ? dbSnapshot.val() : {};
+    try {
+      const sessionUserJson = sessionStorage.getItem('authUser');
+      const localUserJson = localStorage.getItem('authUser');
+      const userJson = sessionUserJson || localUserJson;
 
-          // The user's role is now sourced directly from the database
-          const userRole: UserRole = dbData.role || 'seller';
-
-          // Fetch photo from Firestore
-          const userFsRef = doc(firestore, 'user_profiles', firebaseUser.uid);
-          const fsSnapshot = await getDoc(userFsRef);
-          const fsData = fsSnapshot.exists() ? fsSnapshot.data() : {};
-
-          setUser({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            role: userRole,
-            displayName: dbData.displayName ?? null,
-            photoURL: fsData.photoBase64 || null,
-          });
-
-        } catch (error) {
-            console.error("Error loading user profile:", error);
-            // Fallback for safety
-            setUser({
-                uid: firebaseUser.uid,
-                email: firebaseUser.email,
-                role: 'seller',
-                displayName: null,
-                photoURL: null,
-            });
-        }
-      } else {
-        setUser(null);
+      if (userJson) {
+        setUser(JSON.parse(userJson));
       }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    } catch (error) {
+      console.error("Failed to parse user from storage", error);
+      sessionStorage.removeItem('authUser');
+      localStorage.removeItem('authUser');
+    }
+    setLoading(false);
   }, []);
 
   const login = async (email: string, password: string, rememberMe: boolean) => {
-    const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
-    await setPersistence(auth, persistence);
-    await signInWithEmailAndPassword(auth, email, password);
+    const sanitizedEmail = sanitizeEmail(email);
+    const passwordHash = await sha256client(password);
+
+    const userRef = ref(db, `users/${sanitizedEmail}`);
+    const snapshot = await get(userRef);
+
+    if (!snapshot.exists() || snapshot.val().passwordHash !== passwordHash) {
+      throw new Error("Invalid credentials");
+    }
+
+    const dbData = snapshot.val();
+    
+    const userFsRef = doc(firestore, 'user_profiles', sanitizedEmail);
+    const fsSnapshot = await getDoc(userFsRef);
+    const fsData = fsSnapshot.exists() ? fsSnapshot.data() : {};
+
+    const userProfile: UserProfile = {
+      uid: sanitizedEmail,
+      email: dbData.email,
+      role: dbData.role || 'seller',
+      displayName: dbData.displayName || null,
+      photoURL: fsData.photoBase64 || null,
+    };
+
+    setUser(userProfile);
+
+    const storage = rememberMe ? localStorage : sessionStorage;
+    storage.setItem('authUser', JSON.stringify(userProfile));
     
     if (rememberMe) {
       localStorage.setItem('quickLoginUser', JSON.stringify({ email, password }));
     } else {
       localStorage.removeItem('quickLoginUser');
+      sessionStorage.removeItem('authUser'); // Clear session storage if local is used
+      localStorage.setItem('authUser', JSON.stringify(userProfile)); // Ensure it's in local storage
     }
   };
 
   const logout = async () => {
-    await signOut(auth);
+    setUser(null);
+    sessionStorage.removeItem('authUser');
+    localStorage.removeItem('authUser');
   };
   
   const register = async (email: string, password: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const newUser = userCredential.user;
+    const sanitizedEmail = sanitizeEmail(email);
     
-    const userRef = ref(db, 'users/' + newUser.uid);
-    // New users are automatically assigned the 'seller' role
-    await set(userRef, {
-      email: newUser.email,
-      role: 'seller',
-      displayName: "",
-      createdAt: serverTimestamp(),
-    });
-  };
+    const userRef = ref(db, 'users/' + sanitizedEmail);
+    const snapshot = await get(userRef);
+    if (snapshot.exists()) {
+      throw new Error('Email already in use');
+    }
 
-  const createUser = async (email: string, password: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const newUser = userCredential.user;
+    const passwordHash = await sha256client(password);
     
-    const userRef = ref(db, 'users/' + newUser.uid);
     await set(userRef, {
-      email: newUser.email,
+      email: email,
       role: 'seller',
-      displayName: "",
+      displayName: email.split('@')[0],
       createdAt: serverTimestamp(),
+      passwordHash: passwordHash
     });
   };
 
   const updateUserProfile = async (data: { displayName?: string; photoBase64?: string }) => {
     if (!user) throw new Error("User not authenticated");
-
     const { displayName, photoBase64 } = data;
     const updates: Partial<Pick<UserProfile, 'displayName' | 'photoURL'>> = {};
 
@@ -124,17 +139,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await update(userDbRef, { displayName });
         updates.displayName = displayName;
     }
-
-    if (photoBase64 !== undefined && photoBase64 !== user.photoURL) {
+    if (photoBase64 !== undefined) {
         const userFsRef = doc(firestore, 'user_profiles', user.uid);
-        await setDoc(userFsRef, { photoBase64 });
+        await setDoc(userFsRef, { photoBase64 }, { merge: true });
         updates.photoURL = photoBase64;
     }
+    
+    const updatedUser = { ...user, ...updates };
+    setUser(updatedUser);
 
-    setUser(prevUser => {
-        if (!prevUser) return null;
-        return { ...prevUser, ...updates };
-    });
+    if (sessionStorage.getItem('authUser')) {
+        sessionStorage.setItem('authUser', JSON.stringify(updatedUser));
+    }
+    if (localStorage.getItem('authUser')) {
+        localStorage.setItem('authUser', JSON.stringify(updatedUser));
+    }
+  };
+
+  const requestPasswordResetCode = async (email: string) => {
+    try {
+        const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?action=requestReset&email=${encodeURIComponent(email)}`);
+        if (!response.ok) throw new Error("Network response was not ok.");
+        return await response.json();
+    } catch (error) {
+        console.error("Error requesting password reset code:", error);
+        return { ok: false, msg: "Erro de comunicação com o servidor. Tente novamente." };
+    }
+  };
+
+  const confirmPasswordResetWithCode = async (email: string, code: string, newPassword: string) => {
+    try {
+        const url = `${GOOGLE_APPS_SCRIPT_URL}?action=confirmReset&email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&newPassword=${encodeURIComponent(newPassword)}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Network response was not ok.");
+        return await response.json();
+    } catch (error) {
+        console.error("Error confirming password reset:", error);
+        return { ok: false, msg: "Erro de comunicação com o servidor. Tente novamente." };
+    }
   };
 
   const value = {
@@ -142,9 +184,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading,
     login,
     logout,
-    createUser,
     register,
     updateUserProfile,
+    requestPasswordResetCode,
+    confirmPasswordResetWithCode,
   };
 
   return (

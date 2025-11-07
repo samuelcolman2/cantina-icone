@@ -49,16 +49,11 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
       await register(email, password);
       onClose(); // Close modal on successful registration
     } catch (err: any) {
-      console.error(err.code, err.message);
-      switch (err.code) {
-        case 'auth/invalid-email':
-          setError('O formato do e-mail é inválido.');
-          break;
-        case 'auth/email-already-in-use':
-          setError('Este e-mail já está cadastrado.');
-          break;
-        default:
-          setError('Ocorreu um erro ao criar a conta. Tente novamente.');
+      console.error(err);
+      if (err.message === 'Email already in use') {
+        setError('Este e-mail já está cadastrado.');
+      } else {
+        setError('Ocorreu um erro ao criar a conta. Tente novamente.');
       }
     } finally {
       setIsLoading(false);
