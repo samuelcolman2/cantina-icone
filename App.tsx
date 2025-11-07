@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ref, onValue, update, increment, push, serverTimestamp } from 'firebase/database';
 import { db } from './firebase/config';
@@ -10,15 +9,16 @@ import SaleCard from './components/SaleCard';
 import BarChart from './components/BarChart';
 import Login from './components/Login';
 import Spinner from './components/Spinner';
-import ProductManagement from './components/UserManagement';
+import ProductManagementDashboard from './components/ProductManagementDashboard';
 import StockManagement from './components/StockManagement';
 import SalesLog from './components/SalesLog';
 import ConfirmationModal from './components/ConfirmationModal';
 import { BoxIcon, SavoryIcon, SweetIcon, CookieIcon } from './components/Icons';
+import UserManagement from './components/UserManagement';
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
-type ActiveView = 'products' | 'dashboard' | 'products_management' | 'stock_management';
+type ActiveView = 'products' | 'dashboard' | 'products_management' | 'stock_management' | 'user_management';
 
 const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -159,7 +159,8 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
     products: 'Produtos',
     dashboard: 'Dashboard de Faturamento',
     products_management: 'Gerenciar Itens',
-    stock_management: 'Controle de Estoque'
+    stock_management: 'Controle de Estoque',
+    user_management: 'Gerenciamento de Usuários'
   };
 
   return (
@@ -246,11 +247,15 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
                 )}
 
                 {isAdmin && activeView === 'products_management' && (
-                  <ProductManagement />
+                  <ProductManagementDashboard />
                 )}
 
                 {isAdmin && activeView === 'stock_management' && (
                   <StockManagement />
+                )}
+
+                {isAdmin && activeView === 'user_management' && (
+                  <UserManagement />
                 )}
             </div>
         </main>

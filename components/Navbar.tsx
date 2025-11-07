@@ -8,10 +8,11 @@ import {
   UserIcon,
   ChevronLeftIcon,
   BoxIcon,
+  UsersIcon,
 } from './Icons';
 import UserProfileModal from './UserProfileModal';
 
-type ActiveView = 'products' | 'dashboard' | 'products_management' | 'stock_management';
+type ActiveView = 'products' | 'dashboard' | 'products_management' | 'stock_management' | 'user_management';
 
 interface SidebarProps {
   activeView: ActiveView;
@@ -29,6 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isAdmin })
     { id: 'dashboard', label: 'Faturamento', icon: <ChartBarIcon />, adminOnly: true },
     { id: 'products_management', label: 'Gerenciar', icon: <WrenchScrewdriverIcon />, adminOnly: true },
     { id: 'stock_management', label: 'Estoque', icon: <BoxIcon />, adminOnly: true },
+    { id: 'user_management', label: 'Usuários', icon: <UsersIcon />, adminOnly: true },
   ];
   
   const accessibleNavItems = navItems.filter(item => !item.adminOnly || isAdmin);

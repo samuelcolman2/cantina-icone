@@ -4,14 +4,14 @@ import { db } from '../firebase/config';
 import { Product } from '../types';
 import Spinner from './Spinner';
 import { DocumentTextIcon } from './Icons';
-import ProductSalesReportModal from './ProductSalesReportModal';
+import GeneralSalesReportModal from './GeneralSalesReportModal';
 
 const StockManagement: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [stockInputs, setStockInputs] = useState<Record<string, string>>({});
     const [feedback, setFeedback] = useState<Record<string, { message: string; type: 'info' | 'success' | 'error' }>>({});
-    const [viewingReportForProduct, setViewingReportForProduct] = useState<Product | null>(null);
+    const [isGeneralReportModalOpen, setIsGeneralReportModalOpen] = useState(false);
 
     useEffect(() => {
         setIsLoading(true);
@@ -70,9 +70,18 @@ const StockManagement: React.FC = () => {
     return (
         <>
             <div className="bg-white text-slate-800 rounded-2xl shadow-lg border border-slate-200/50 p-6 sm:p-8">
-                <p className="text-center text-slate-500 mb-6 -mt-2">
-                    Atualize a quantidade de itens disponíveis para venda.
-                </p>
+                <div className="flex justify-between items-start mb-6">
+                    <p className="text-slate-500 max-w-md">
+                        Atualize a quantidade de itens disponíveis para venda.
+                    </p>
+                    <button
+                        onClick={() => setIsGeneralReportModalOpen(true)}
+                        className="bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg transition-all duration-200 border border-slate-300/80 shadow-sm hover:shadow-md flex items-center gap-2 text-sm whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                    >
+                        <DocumentTextIcon className="w-5 h-5 text-slate-500" />
+                        Relatório Geral
+                    </button>
+                </div>
                 {isLoading ? <Spinner /> : (
                     <div className="border border-slate-200 rounded-lg overflow-hidden">
                         <div className="max-h-[65vh] overflow-y-auto relative">
@@ -84,9 +93,6 @@ const StockManagement: React.FC = () => {
                                         </th>
                                         <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-center text-sm font-semibold text-slate-900">
                                             Estoque Atual
-                                        </th>
-                                        <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-slate-900">
-                                            Relatório
                                         </th>
                                         <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6 text-sm font-semibold text-slate-900 text-center">
                                             Ajustar Estoque
@@ -110,15 +116,6 @@ const StockManagement: React.FC = () => {
                                                 </td>
                                                 <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-slate-500 text-center">
                                                     {product.stock}
-                                                </td>
-                                                <td className="whitespace-nowrap py-4 text-sm text-slate-500 text-center">
-                                                    <button 
-                                                        onClick={() => setViewingReportForProduct(product)}
-                                                        title={`Ver relatório de ${product.name}`}
-                                                        className="text-slate-500 hover:text-blue-600 p-2 rounded-full hover:bg-blue-100 transition-colors"
-                                                    >
-                                                        <DocumentTextIcon />
-                                                    </button>
                                                 </td>
                                                 <td className="whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-6">
                                                     <div className="flex items-center justify-end gap-2">
@@ -164,12 +161,11 @@ const StockManagement: React.FC = () => {
                 `}</style>
             </div>
 
-            {viewingReportForProduct && (
-                <ProductSalesReportModal
-                    isOpen={!!viewingReportForProduct}
-                    onClose={() => setViewingReportForProduct(null)}
-                    product={viewingReportForProduct}
-                />
+            {isGeneralReportModalOpen && (
+                <GeneralSalesReportModal
+                    isOpen={isGeneralReportModalOpen}
+                    onClose={() => setIsGeneralReportModalOpen(false)}
+                    products={products} />
             )}
         </>
     );

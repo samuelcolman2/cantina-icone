@@ -29,17 +29,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
       if (firebaseUser && firebaseUser.email) {
         try {
-          // Fetch admin config
-          const response = await fetch('/admin-config.json');
-          if (!response.ok) throw new Error('Failed to load admin configuration.');
-          const config = await response.json();
-          const adminEmails: string[] = config.admins || [];
-          const userRole: UserRole = adminEmails.includes(firebaseUser.email) ? 'admin' : 'seller';
-          
-          // Fetch user data from RTDB
+          // Fetch user data from RTDB, which now includes the role
           const userDbRef = ref(db, `users/${firebaseUser.uid}`);
           const dbSnapshot = await get(userDbRef);
           const dbData = dbSnapshot.exists() ? dbSnapshot.val() : {};
+
+          // The user's role is now sourced directly from the database
+          const userRole: UserRole = dbData.role || 'seller';
 
           // Fetch photo from Firestore
           const userFsRef = doc(firestore, 'user_profiles', firebaseUser.uid);
@@ -56,6 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         } catch (error) {
             console.error("Error loading user profile:", error);
+            // Fallback for safety
             setUser({
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
@@ -94,6 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const newUser = userCredential.user;
     
     const userRef = ref(db, 'users/' + newUser.uid);
+    // New users are automatically assigned the 'seller' role
     await set(userRef, {
       email: newUser.email,
       role: 'seller',
