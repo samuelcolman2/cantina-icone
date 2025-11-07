@@ -62,27 +62,27 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div 
-        className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
         onClick={onClose}
         aria-modal="true"
         role="dialog"
     >
       <div 
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 relative"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-8 relative"
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
       >
         <button 
           onClick={onClose} 
-          className="absolute top-4 right-4 text-slate-500 hover:text-slate-800"
+          className="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
           aria-label="Fechar modal"
         >
           <CloseIcon />
         </button>
         
-        <h2 className="text-2xl font-bold text-slate-800 mb-6">Criar Conta</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">Criar Conta</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="register-email">
+            <label className="block text-slate-600 dark:text-slate-300 text-sm font-medium mb-1" htmlFor="register-email">
               Email
             </label>
             <input
@@ -92,12 +92,12 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="appearance-none border border-slate-300 bg-white rounded-md w-full py-2 px-3 text-slate-800 placeholder-slate-400 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+              className="appearance-none border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md w-full py-2 px-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500/50"
             />
           </div>
           
           <div className="relative">
-            <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="register-password">
+            <label className="block text-slate-600 dark:text-slate-300 text-sm font-medium mb-1" htmlFor="register-password">
               Senha
             </label>
             <input
@@ -107,7 +107,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="appearance-none border border-slate-300 bg-white rounded-md w-full py-2 px-3 text-slate-800 placeholder-slate-400 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+              className="appearance-none border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md w-full py-2 px-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500/50"
             />
             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 top-6 pr-3 flex items-center text-sm leading-5 text-slate-500 hover:text-slate-700">
                 {showPassword ? <EyeSlashIcon /> : <EyeIcon />}
@@ -115,7 +115,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="relative">
-            <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="confirm-password">
+            <label className="block text-slate-600 dark:text-slate-300 text-sm font-medium mb-1" htmlFor="confirm-password">
               Confirmar Senha
             </label>
             <input
@@ -125,7 +125,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="appearance-none border border-slate-300 bg-white rounded-md w-full py-2 px-3 text-slate-800 placeholder-slate-400 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+              className="appearance-none border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md w-full py-2 px-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500/50"
             />
           </div>
           

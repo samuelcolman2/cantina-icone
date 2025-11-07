@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ref, onValue, update, increment, push, serverTimestamp } from 'firebase/database';
 import { db } from './firebase/config';
@@ -15,6 +16,7 @@ import SalesLog from './components/SalesLog';
 import ConfirmationModal from './components/ConfirmationModal';
 import { BoxIcon, SavoryIcon, SweetIcon, CookieIcon } from './components/Icons';
 import UserManagement from './components/UserManagement';
+import ProductRanking from './components/ProductRanking';
 
 const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -149,7 +151,7 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
   };
 
   const EmptyState = () => (
-    <div className="col-span-1 lg:col-span-3 text-center border border-dashed border-slate-700 rounded-2xl p-9 bg-[#3a475b] text-slate-400 mt-6">
+    <div className="col-span-1 lg:col-span-3 text-center border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-9 bg-gray-200/50 dark:bg-[#3a475b] text-slate-500 dark:text-slate-400 mt-6">
        {searchQuery ? "Nenhum produto encontrado." : "Nenhum produto cadastrado."}
     </div>
   );
@@ -164,7 +166,7 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#2d3748] text-white">
+    <div className="flex min-h-screen bg-gray-100 dark:bg-[#2d3748] text-slate-800 dark:text-white">
       <Sidebar
         activeView={activeView}
         setActiveView={setActiveView}
@@ -174,7 +176,7 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
         <main className="flex-1 p-4 sm:p-6">
             <div className="max-w-[min(98vw,1400px)] mx-auto">
                 <header className="mb-6">
-                    <h1 className="text-3xl font-bold text-white/90">{viewTitles[activeView]}</h1>
+                    <h1 className="text-3xl font-bold text-slate-800 dark:text-white/90">{viewTitles[activeView]}</h1>
                 </header>
 
                 {activeView === 'products' && (
@@ -186,9 +188,9 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
                         placeholder="Buscar produto..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="appearance-none border border-slate-600 bg-[#3a475b] rounded-xl py-2.5 px-3 shadow-sm focus:outline-none focus:ring-4 focus:ring-orange-500/25 text-white placeholder-slate-400"
+                        className="appearance-none border border-slate-300 dark:border-slate-600 bg-white dark:bg-[#3a475b] rounded-xl py-2.5 px-3 shadow-sm focus:outline-none focus:ring-4 focus:ring-orange-500/25 text-slate-800 dark:text-white placeholder-slate-400"
                       />
-                      <span className="text-sm text-slate-400">{filteredProducts.length} itens</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400">{filteredProducts.length} itens</span>
                     </div>
                     
                     {isLoadingProducts ? <Spinner /> : (
@@ -197,7 +199,7 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
                           {categories.map(category => (
                             groupedProducts[category] && groupedProducts[category].length > 0 && (
                               <section key={category}>
-                                <h2 className="text-2xl font-bold mb-4 text-white/90 border-b-2 border-[#FD7F08]/50 pb-2">{category}</h2>
+                                <h2 className="text-2xl font-bold mb-4 text-slate-800 dark:text-white/90 border-b-2 border-orange-500/50 dark:border-[#FD7F08]/50 pb-2">{category}</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
                                   {groupedProducts[category].map(product => (
                                     <SaleCard
@@ -220,28 +222,35 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
                 )}
 
                 {isAdmin && activeView === 'dashboard' && (
-                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
-                    <section className="space-y-8 xl:col-span-2">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {categories.map(category => {
-                                const data = totals.categories[category];
-                                if (!data) return null;
-                                return (
-                                    <KpiCard
-                                        key={category}
-                                        variant="secondary"
-                                        title={`Faturamento ${category}`}
-                                        value={BRL.format(data.revenue)}
-                                        subtitle={`${data.sold} vendidos`}
-                                        icon={categoryIcons[category] || <BoxIcon />}
-                                    />
-                                );
-                            })}
+                  <div className="space-y-8">
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
+                      <section className="space-y-8 xl:col-span-2">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              {categories.map(category => {
+                                  const data = totals.categories[category];
+                                  if (!data) return null;
+                                  return (
+                                      <KpiCard
+                                          key={category}
+                                          title={`Faturamento ${category}`}
+                                          value={BRL.format(data.revenue)}
+                                          subtitle={`${data.sold} vendidos`}
+                                          icon={categoryIcons[category] || <BoxIcon />}
+                                      />
+                                  );
+                              })}
+                          </div>
+                        <BarChart data={totals.categories} categories={categories} />
+                      </section>
+                      <section className="xl:col-span-1">
+                        <SalesLog />
+                      </section>
+                    </div>
+                    <section>
+                        <h2 className="text-2xl font-bold mb-4 text-slate-800 dark:text-white/90 border-b-2 border-orange-500/50 dark:border-[#FD7F08]/50 pb-2">Ranking de Produtos</h2>
+                        <div className="pt-4">
+                          <ProductRanking products={products} categories={categories} />
                         </div>
-                      <BarChart data={totals.categories} categories={categories} />
-                    </section>
-                    <section className="xl:col-span-1">
-                      <SalesLog />
                     </section>
                   </div>
                 )}

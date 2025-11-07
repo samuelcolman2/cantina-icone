@@ -156,37 +156,37 @@ const CategoryManagementModal: React.FC<CategoryManagementModalProps> = ({ isOpe
 
     return (
         <>
-            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-                <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 sm:p-8 relative flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-slate-800" aria-label="Fechar modal"><CloseIcon /></button>
-                    <h2 className="text-2xl font-bold text-slate-800 mb-4">Gerenciar Categorias</h2>
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg p-6 sm:p-8 relative flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200" aria-label="Fechar modal"><CloseIcon /></button>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Gerenciar Categorias</h2>
                     
                     <div className="flex-grow overflow-y-auto pr-2 -mr-2 space-y-2">
                         {isLoading ? <Spinner /> : categories.length > 0 ? categories.map(cat => (
-                            <div key={cat} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
-                                <span className="font-medium text-slate-700">{cat}</span>
+                            <div key={cat} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                <span className="font-medium text-slate-700 dark:text-slate-200">{cat}</span>
                                 <div className="flex items-center gap-2">
                                     <button 
                                         onClick={() => openActionsModal(cat)} 
                                         aria-label={`Ações para ${cat}`} 
-                                        className="text-slate-500 hover:text-slate-800 p-1.5 rounded-full hover:bg-slate-200 transition-colors"
+                                        className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                                     >
                                         <GearIcon />
                                     </button>
                                 </div>
                             </div>
-                        )) : <p className="text-slate-500 text-center p-4">Nenhuma categoria cadastrada.</p>}
+                        )) : <p className="text-slate-500 dark:text-slate-400 text-center p-4">Nenhuma categoria cadastrada.</p>}
                     </div>
 
-                    <div className="mt-6 pt-6 border-t border-slate-200">
-                        <h3 className="text-lg font-semibold text-slate-700 mb-3">Adicionar Nova Categoria</h3>
+                    <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+                        <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-3">Adicionar Nova Categoria</h3>
                         <form onSubmit={handleAddCategory} className="flex gap-2">
                             <input
                                 type="text"
                                 value={newCategoryName}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
                                 placeholder="Nome da categoria"
-                                className="flex-grow appearance-none border border-slate-300 bg-white rounded-md py-2 px-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                                className="flex-grow appearance-none border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md py-2 px-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                             />
                             <button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md transition-colors">Adicionar</button>
                         </form>

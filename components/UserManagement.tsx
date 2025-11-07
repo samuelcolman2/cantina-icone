@@ -72,25 +72,25 @@ const UserManagement: React.FC = () => {
     };
     
     return (
-        <div className="bg-white text-slate-800 rounded-2xl shadow-lg border border-slate-200/50 p-6 sm:p-8">
-            <p className="text-slate-500 max-w-md mb-6">
+        <div className="bg-white dark:bg-[#3a475b] text-slate-800 dark:text-slate-100 rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700 p-6 sm:p-8">
+            <p className="text-slate-500 dark:text-slate-400 max-w-md mb-6">
                 Gerencie as permissões de acesso dos usuários. Promova vendedores a administradores ou reverta o acesso conforme necessário.
             </p>
             {isLoading ? <Spinner /> : (
-                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
                     <div className="max-h-[65vh] overflow-y-auto relative">
-                        <table className="min-w-full divide-y divide-slate-200">
-                            <thead className="bg-slate-50 sticky top-0 z-10">
+                        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                            <thead className="bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-10">
                                 <tr>
-                                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">
+                                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 dark:text-slate-100 sm:pl-6">
                                         Usuário
                                     </th>
-                                    <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-slate-900">
+                                    <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-slate-900 dark:text-slate-100">
                                         Permissão
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 bg-white">
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-[#3a475b]">
                                 {users.map(user => (
                                     <tr key={user.uid}>
                                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
@@ -99,18 +99,18 @@ const UserManagement: React.FC = () => {
                                                     {user.photoURL ? (
                                                       <img className="h-10 w-10 rounded-full object-cover" src={user.photoURL} alt={`Foto de ${user.displayName || user.email}`} />
                                                     ) : (
-                                                      <UserIcon className="h-10 w-10 text-slate-300 bg-slate-100 rounded-full p-2"/>
+                                                      <UserIcon className="h-10 w-10 text-slate-300 bg-slate-100 dark:bg-slate-600 rounded-full p-2"/>
                                                     )}
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="font-medium text-slate-900">{user.displayName || 'Nome não definido'}</div>
-                                                    <div className="text-slate-500">{user.email}</div>
+                                                    <div className="font-medium text-slate-900 dark:text-slate-100">{user.displayName || 'Nome não definido'}</div>
+                                                    <div className="text-slate-500 dark:text-slate-400">{user.email}</div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="whitespace-nowrap px-3 py-4 text-sm text-center">
                                             <label htmlFor={`role-${user.uid}`} className="flex items-center justify-center cursor-pointer">
-                                                <span className={`mr-3 font-medium ${user.role === 'seller' ? 'text-slate-500' : 'text-slate-900'}`}>Vendedor</span>
+                                                <span className={`mr-3 font-medium ${user.role === 'seller' ? 'text-slate-500 dark:text-slate-400' : 'text-slate-900 dark:text-slate-100'}`}>Vendedor</span>
                                                 <div className="relative">
                                                     <input 
                                                         type="checkbox" 
@@ -120,10 +120,10 @@ const UserManagement: React.FC = () => {
                                                         onChange={() => handleRoleChange(user.uid, user.role)}
                                                         disabled={currentUser?.uid === user.uid}
                                                     />
-                                                    <div className={`block w-14 h-8 rounded-full transition ${user.role === 'admin' ? 'bg-orange-500' : 'bg-slate-300'}`}></div>
+                                                    <div className={`block w-14 h-8 rounded-full transition ${user.role === 'admin' ? 'bg-orange-500' : 'bg-slate-300 dark:bg-slate-600'}`}></div>
                                                     <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${user.role === 'admin' ? 'transform translate-x-6' : ''}`}></div>
                                                 </div>
-                                                <span className={`ml-3 font-medium ${user.role === 'admin' ? 'text-slate-900' : 'text-slate-500'}`}>Admin</span>
+                                                <span className={`ml-3 font-medium ${user.role === 'admin' ? 'text-slate-900 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400'}`}>Admin</span>
                                             </label>
                                         </td>
                                     </tr>
@@ -131,7 +131,7 @@ const UserManagement: React.FC = () => {
                             </tbody>
                         </table>
                         {users.length === 0 && (
-                            <div className="text-center text-slate-500 p-8">
+                            <div className="text-center text-slate-500 dark:text-slate-400 p-8">
                                 Nenhum usuário encontrado.
                             </div>
                         )}

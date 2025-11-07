@@ -142,24 +142,24 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
 
     return (
         <div 
-            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
             onClick={onClose}
             aria-modal="true"
             role="dialog"
         >
           <div 
-            className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 relative"
+            className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-8 relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button 
               onClick={onClose} 
-              className="absolute top-4 right-4 text-slate-500 hover:text-slate-800"
+              className="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               aria-label="Fechar modal"
             >
               <CloseIcon />
             </button>
             
-            <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">Editar Perfil</h2>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6 text-center">Editar Perfil</h2>
             
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="flex justify-center">
@@ -168,7 +168,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
                             {photo ? (
                                 <img src={photo} alt="Prévia do perfil" className="w-28 h-28 rounded-full object-cover" />
                             ) : (
-                                <UserIcon className="w-28 h-28 text-slate-300 bg-slate-100 rounded-full p-4" />
+                                <UserIcon className="w-28 h-28 text-slate-300 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 rounded-full p-4" />
                             )}
                             <div className={`absolute inset-0 bg-black/50 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity ${isCompressing ? '!opacity-0' : ''}`}>
                                 <CameraIcon className="w-8 h-8" />
@@ -190,7 +190,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
                 </div>
 
                 <div>
-                    <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="displayName">
+                    <label className="block text-slate-600 dark:text-slate-300 text-sm font-medium mb-1" htmlFor="displayName">
                         Nome Completo
                     </label>
                     <input
@@ -199,12 +199,12 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
                         placeholder="Seu nome completo"
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
-                        className="appearance-none border border-slate-300 bg-white rounded-md w-full py-2 px-3 text-slate-800 placeholder-slate-400 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                        className="appearance-none border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md w-full py-2 px-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                     />
                 </div>
               
                 {feedback && (
-                    <p className={`text-sm text-center p-3 rounded-md border ${feedback.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                    <p className={`text-sm text-center p-3 rounded-md border ${feedback.type === 'success' ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200'}`}>
                         {feedback.message}
                     </p>
                 )}
@@ -213,7 +213,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
                     <button
                         type="button"
                         onClick={onClose}
-                        className="py-2 px-4 rounded-md text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400"
+                        className="py-2 px-4 rounded-md text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400"
                     >
                         Cancelar
                     </button>

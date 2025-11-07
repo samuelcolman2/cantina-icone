@@ -74,31 +74,31 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
   
   return (
     <div 
-        className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
         onClick={onClose}
         aria-modal="true"
         role="dialog"
     >
       <div 
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 relative"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-8 relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button 
           onClick={onClose} 
-          className="absolute top-4 right-4 text-slate-500 hover:text-slate-800"
+          className="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
           aria-label="Fechar modal"
         >
           <CloseIcon />
         </button>
         
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">Redefinir Senha</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">Redefinir Senha</h2>
         
         {step === 1 && (
           <>
-            <p className="text-slate-500 mb-6">Digite seu e-mail para receber um código de verificação.</p>
+            <p className="text-slate-500 dark:text-slate-400 mb-6">Digite seu e-mail para receber um código de verificação.</p>
             <form onSubmit={handleRequestCode} className="space-y-4">
               <div>
-                <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="reset-email">
+                <label className="block text-slate-600 dark:text-slate-300 text-sm font-medium mb-1" htmlFor="reset-email">
                   Email
                 </label>
                 <input
@@ -120,10 +120,10 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
 
         {step === 2 && (
            <>
-            <p className="text-slate-500 mb-6">Insira o código recebido e sua nova senha.</p>
+            <p className="text-slate-500 dark:text-slate-400 mb-6">Insira o código recebido e sua nova senha.</p>
             <form onSubmit={handleConfirmReset} className="space-y-4">
               <div>
-                <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="reset-code">
+                <label className="block text-slate-600 dark:text-slate-300 text-sm font-medium mb-1" htmlFor="reset-code">
                   Código de Verificação
                 </label>
                 <input
@@ -137,7 +137,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                 />
               </div>
               <div className="relative">
-                <label className="block text-slate-600 text-sm font-medium mb-1" htmlFor="new-password">
+                <label className="block text-slate-600 dark:text-slate-300 text-sm font-medium mb-1" htmlFor="new-password">
                   Nova Senha
                 </label>
                 <input
@@ -161,19 +161,23 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
         )}
         
         {error && <p className="error-message mt-4">{error}</p>}
-        {notification && !success && <p className="success-message mt-4">{notification}</p>}
+        {notification && !success && <p className="notification-message mt-4">{notification}</p>}
         {success && <p className="success-message mt-4">{success}</p>}
 
       </div>
       <style>{`
           .input-style { appearance: none; border: 1px solid #cbd5e1; background-color: white; border-radius: 0.5rem; width: 100%; padding: 0.5rem 0.75rem; color: #1e293b; line-height: 1.5; } 
+          .dark .input-style { border-color: #475569; background-color: #334155; color: #f1f5f9; }
           .input-style::placeholder { color: #94a3b8; } 
           .input-style:focus { outline: none; box-shadow: 0 0 0 2px #fb923c; border-color: #f97316; }
           .button-primary { width: 100%; background-color: #FD7F08; color: white; font-weight: bold; padding: 0.5rem 1rem; border-radius: 0.375rem; transition-property: background-color; transition-duration: 200ms; }
           .button-primary:hover { background-color: #ea580c; }
           .button-primary:disabled { opacity: 0.5; }
           .error-message { color: #dc2626; font-size: 0.75rem; font-style: italic; text-align: center; }
+          .notification-message { text-align: center; font-size: 0.875rem; padding: 1rem; border-radius: 0.375rem; border-width: 1px; background-color: #eef2ff; border-color: #a5b4fc; color: #3730a3; }
+          .dark .notification-message { background-color: #312e81; border-color: #4f46e5; color: #c7d2fe; }
           .success-message { text-align: center; font-size: 0.875rem; padding: 1rem; border-radius: 0.375rem; border-width: 1px; background-color: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+          .dark .success-message { background-color: #14532d; border-color: #22c55e; color: #dcfce7; }
       `}</style>
     </div>
   );

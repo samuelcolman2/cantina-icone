@@ -49,15 +49,15 @@ const SalesLog: React.FC = () => {
     };
 
     return (
-        <div className="bg-white text-slate-800 rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 h-[72vh]">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Log de Vendas Recentes</h3>
+        <div className="bg-white dark:bg-[#3a475b] text-slate-800 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6 h-[72vh]">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">Log de Vendas Recentes</h3>
             <div className="h-[calc(100%-2.5rem)] overflow-y-auto pr-2">
                 {isLoading ? <Spinner /> : logEntries.length > 0 ? (
                     <ul className="space-y-3">
                         {logEntries.map(entry => (
-                            <li key={entry.id} className="flex flex-col p-2 rounded-lg bg-slate-50/80">
-                                <span className="font-semibold text-sm text-slate-700">{entry.productName}</span>
-                                <div className="flex justify-between items-center text-xs text-slate-500 mt-0.5">
+                            <li key={entry.id} className="flex flex-col p-2 rounded-lg bg-slate-50/80 dark:bg-slate-800/50">
+                                <span className="font-semibold text-sm text-slate-700 dark:text-slate-200">{entry.productName}</span>
+                                <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                     <span>{BRL.format(entry.price)}</span>
                                     <span>{formatDate(entry.timestamp)}</span>
                                 </div>
@@ -65,7 +65,7 @@ const SalesLog: React.FC = () => {
                         ))}
                     </ul>
                 ) : (
-                    <div className="text-center text-slate-500 p-8 h-full flex items-center justify-center">
+                    <div className="text-center text-slate-500 dark:text-slate-400 p-8 h-full flex items-center justify-center">
                         Nenhuma venda registrada ainda.
                     </div>
                 )}

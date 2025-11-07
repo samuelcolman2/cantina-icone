@@ -3,7 +3,7 @@ import React from 'react';
 
 const Spinner: React.FC<{ fullScreen?: boolean }> = ({ fullScreen = false }) => {
   const containerClasses = fullScreen
-    ? "fixed inset-0 bg-[#2d3748] flex items-center justify-center z-50"
+    ? "fixed inset-0 bg-gray-100/80 backdrop-blur-sm dark:bg-[#2d3748]/80 flex items-center justify-center z-50"
     : "flex items-center justify-center p-4";
 
   return (

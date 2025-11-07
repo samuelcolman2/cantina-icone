@@ -91,15 +91,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     setUser(userProfile);
 
-    const storage = rememberMe ? localStorage : sessionStorage;
-    storage.setItem('authUser', JSON.stringify(userProfile));
-    
+    // Clear both storages first for a clean state
+    sessionStorage.removeItem('authUser');
+    localStorage.removeItem('authUser');
+
     if (rememberMe) {
-      localStorage.setItem('quickLoginUser', JSON.stringify({ email, password }));
+        localStorage.setItem('authUser', JSON.stringify(userProfile));
     } else {
-      localStorage.removeItem('quickLoginUser');
-      sessionStorage.removeItem('authUser'); // Clear session storage if local is used
-      localStorage.setItem('authUser', JSON.stringify(userProfile)); // Ensure it's in local storage
+        sessionStorage.setItem('authUser', JSON.stringify(userProfile));
+    }
+
+    // Manage quick login users list in localStorage
+    try {
+        const quickLoginUsersJson = localStorage.getItem('quickLoginUsers');
+        let quickLoginUsers = quickLoginUsersJson ? JSON.parse(quickLoginUsersJson) : [];
+        if (!Array.isArray(quickLoginUsers)) quickLoginUsers = []; // Ensure it's an array
+
+        const userIndex = quickLoginUsers.findIndex((u: any) => u.email === userProfile.email);
+
+        if (rememberMe) {
+            const newQuickLoginUser = {
+                email: userProfile.email,
+                password: password,
+                photoURL: userProfile.photoURL,
+            };
+            
+            if (userIndex > -1) {
+                quickLoginUsers[userIndex] = newQuickLoginUser;
+            } else {
+                quickLoginUsers.push(newQuickLoginUser);
+            }
+        } else {
+            // If not "remember me", remove from quick login list if they exist
+            if (userIndex > -1) {
+                quickLoginUsers.splice(userIndex, 1);
+            }
+        }
+        
+        localStorage.setItem('quickLoginUsers', JSON.stringify(quickLoginUsers));
+        localStorage.removeItem('quickLoginUser'); // Cleanup old key
+    } catch (error) {
+        console.error("Failed to manage quick login users in localStorage", error);
     }
   };
 

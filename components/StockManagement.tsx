@@ -69,37 +69,37 @@ const StockManagement: React.FC = () => {
 
     return (
         <>
-            <div className="bg-white text-slate-800 rounded-2xl shadow-lg border border-slate-200/50 p-6 sm:p-8">
+            <div className="bg-white dark:bg-[#3a475b] text-slate-800 dark:text-slate-100 rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700 p-6 sm:p-8">
                 <div className="flex justify-between items-start mb-6">
-                    <p className="text-slate-500 max-w-md">
+                    <p className="text-slate-500 dark:text-slate-400 max-w-md">
                         Atualize a quantidade de itens disponíveis para venda.
                     </p>
                     <button
                         onClick={() => setIsGeneralReportModalOpen(true)}
-                        className="bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg transition-all duration-200 border border-slate-300/80 shadow-sm hover:shadow-md flex items-center gap-2 text-sm whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                        className="bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold py-2 px-4 rounded-lg transition-all duration-200 border border-slate-300/80 dark:border-slate-600 shadow-sm hover:shadow-md flex items-center gap-2 text-sm whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                     >
-                        <DocumentTextIcon className="w-5 h-5 text-slate-500" />
+                        <DocumentTextIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                         Relatório Geral
                     </button>
                 </div>
                 {isLoading ? <Spinner /> : (
-                    <div className="border border-slate-200 rounded-lg overflow-hidden">
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
                         <div className="max-h-[65vh] overflow-y-auto relative">
-                            <table className="min-w-full divide-y divide-slate-200">
-                                <thead className="bg-slate-50 sticky top-0 z-10">
+                            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                                <thead className="bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-10">
                                     <tr>
-                                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">
+                                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 dark:text-slate-100 sm:pl-6">
                                             Produto
                                         </th>
-                                        <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-center text-sm font-semibold text-slate-900">
+                                        <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-center text-sm font-semibold text-slate-900 dark:text-slate-100">
                                             Estoque Atual
                                         </th>
-                                        <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6 text-sm font-semibold text-slate-900 text-center">
+                                        <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6 text-sm font-semibold text-slate-900 dark:text-slate-100 text-center">
                                             Ajustar Estoque
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100 bg-white">
+                                <tbody className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-[#3a475b]">
                                     {products.map(product => {
                                         const feedbackState = feedback[product.id];
                                         const isSaving = feedbackState?.type === 'info';
@@ -111,10 +111,10 @@ const StockManagement: React.FC = () => {
                                         
                                         return (
                                             <tr key={product.id}>
-                                                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6">
+                                                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 dark:text-slate-100 sm:pl-6">
                                                     {product.name}
                                                 </td>
-                                                <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-slate-500 text-center">
+                                                <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-slate-500 dark:text-slate-400 text-center">
                                                     {product.stock}
                                                 </td>
                                                 <td className="whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-6">
@@ -124,7 +124,7 @@ const StockManagement: React.FC = () => {
                                                             type="number"
                                                             value={stockInputs[product.id] || ''}
                                                             onChange={(e) => handleInputChange(product.id, e.target.value)}
-                                                            className="appearance-none border border-slate-300 bg-white rounded-md w-24 py-1.5 px-2 text-slate-800 text-center focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                                                            className="appearance-none border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md w-24 py-1.5 px-2 text-slate-800 dark:text-slate-100 text-center focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                                                         />
                                                         <button
                                                             onClick={() => handleUpdateStock(product.id)}
@@ -141,7 +141,7 @@ const StockManagement: React.FC = () => {
                                 </tbody>
                             </table>
                              {products.length === 0 && (
-                                <div className="text-center text-slate-500 p-8">
+                                <div className="text-center text-slate-500 dark:text-slate-400 p-8">
                                     Nenhum produto cadastrado para gerenciar o estoque.
                                 </div>
                             )}

@@ -108,11 +108,11 @@ const ProductManagementModal: React.FC<ProductManagementModalProps> = ({ isOpen,
 
     return (
         <>
-            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-                <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 sm:p-8 relative flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-slate-800" aria-label="Fechar modal"><CloseIcon /></button>
-                    <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-200">
-                        <h2 className="text-2xl font-bold text-slate-800">Gerenciar Produtos</h2>
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={onClose}>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-2xl p-6 sm:p-8 relative flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200" aria-label="Fechar modal"><CloseIcon /></button>
+                    <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-200 dark:border-slate-700">
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Gerenciar Produtos</h2>
                         <button onClick={() => handleOpenProductModal()} className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors">
                             Novo Produto
                         </button>
@@ -120,22 +120,22 @@ const ProductManagementModal: React.FC<ProductManagementModalProps> = ({ isOpen,
                     
                     <div className="flex-grow overflow-y-auto pr-2 -mr-2 space-y-2">
                         {isLoading ? <Spinner /> : products.length > 0 ? products.map(prod => (
-                            <div key={prod.id} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
+                            <div key={prod.id} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                                 <div>
-                                    <span className="font-medium text-slate-700">{prod.name}</span>
-                                    <p className="text-xs text-slate-500">{prod.category} | Estoque: {prod.stock} | {BRL.format(prod.price)}</p>
+                                    <span className="font-medium text-slate-700 dark:text-slate-200">{prod.name}</span>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">{prod.category} | Estoque: {prod.stock} | {BRL.format(prod.price)}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button 
                                         onClick={() => handleOpenActionsModal(prod)} 
                                         aria-label={`Ações para ${prod.name}`} 
-                                        className="text-slate-500 hover:text-slate-800 p-1.5 rounded-full hover:bg-slate-200 transition-colors"
+                                        className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                                     >
                                         <GearIcon />
                                     </button>
                                 </div>
                             </div>
-                        )) : <p className="text-slate-500 text-center p-4">Nenhum produto cadastrado.</p>}
+                        )) : <p className="text-slate-500 dark:text-slate-400 text-center p-4">Nenhum produto cadastrado.</p>}
                     </div>
                 </div>
             </div>

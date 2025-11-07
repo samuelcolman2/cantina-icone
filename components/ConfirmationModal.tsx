@@ -26,15 +26,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[70] p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative" onClick={(e) => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-slate-800" aria-label="Fechar modal"><CloseIcon /></button>
-        <h2 className="text-xl font-bold text-slate-800 mb-4">{title}</h2>
-        <div className="text-slate-600 mb-6">{message}</div>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70] p-4" onClick={onClose}>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md p-6 relative" onClick={(e) => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200" aria-label="Fechar modal"><CloseIcon /></button>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">{title}</h2>
+        <div className="text-slate-600 dark:text-slate-300 mb-6">{message}</div>
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="py-2 px-4 rounded-md text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400"
+            className="py-2 px-4 rounded-md text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400"
           >
             {cancelText}
           </button>

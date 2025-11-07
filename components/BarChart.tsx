@@ -20,9 +20,9 @@ const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
 
   if (maxRevenue === 0) {
     return (
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-        <h3 className="text-lg font-bold text-slate-800 mb-2">Faturamento por Categoria</h3>
-        <div className="text-center text-slate-500 p-8 h-64 flex items-center justify-center">
+      <div className="bg-white dark:bg-[#3a475b] p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Faturamento por Categoria</h3>
+        <div className="text-center text-slate-500 dark:text-slate-400 p-8 h-64 flex items-center justify-center">
           Nenhuma venda registrada para exibir no gráfico.
         </div>
       </div>
@@ -52,11 +52,11 @@ const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
   const defaultGradient = 'from-sky-500 to-sky-400';
 
   return (
-    <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-      <h3 className="text-lg font-bold text-slate-800 mb-6">Faturamento por Categoria</h3>
+    <div className="bg-white dark:bg-[#3a475b] p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+      <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-6">Faturamento por Categoria</h3>
       <div className="flex gap-4">
         {/* Y-Axis Labels */}
-        <div className="flex flex-col justify-between h-64 text-right text-xs text-slate-500 shrink-0">
+        <div className="flex flex-col justify-between h-64 text-right text-xs text-slate-500 dark:text-slate-400 shrink-0">
           {yAxisLabels.map(label => (
             <span key={`label-${label}`}>{BRL.format(label)}</span>
           ))}
@@ -68,7 +68,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
             {/* Grid Lines */}
             <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
               {yAxisLabels.map((_, index) => (
-                <div key={`grid-${index}`} className="w-full border-t border-slate-200/80"></div>
+                <div key={`grid-${index}`} className="w-full border-t border-slate-200/80 dark:border-slate-700/80"></div>
               ))}
             </div>
             
@@ -81,7 +81,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
 
                 return (
                   <div key={category} className="flex flex-col items-center justify-end h-full w-full">
-                    <div className="text-slate-700 font-bold text-xs sm:text-sm mb-1">{BRL.format(revenue)}</div>
+                    <div className="text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm mb-1">{BRL.format(revenue)}</div>
                     <div
                       className={`w-full rounded-t-lg transition-all duration-500 ease-out bg-gradient-to-t ${visuals?.gradient || defaultGradient} hover:opacity-90`}
                       style={{ height: `${height}%` }}
@@ -94,9 +94,9 @@ const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
           </div>
           
           {/* Category Labels */}
-          <div className="flex justify-around text-center border-t-2 border-slate-200">
+          <div className="flex justify-around text-center border-t-2 border-slate-200 dark:border-slate-700">
             {categories.map(category => (
-              <div key={category} className="w-full text-slate-600 font-semibold text-xs sm:text-sm pt-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
+              <div key={category} className="w-full text-slate-600 dark:text-slate-300 font-semibold text-xs sm:text-sm pt-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
                 {category}
               </div>
             ))}
