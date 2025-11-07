@@ -165,7 +165,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
     setIsLoading(true);
 
     const formData = {
-        name: productName.trim(),
+        name: productName.trim().toUpperCase(),
         price: numericPrice,
         image: photoBase64,
         category: selectedCategory,
@@ -302,7 +302,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
                         {categories.length === 0 ? (
                             <option>Crie uma categoria primeiro</option>
                         ) : (
-                            categories.map(cat => <option key={cat} value={cat}>{cat}</option>)
+                            categories.map(cat => <option key={cat} value={cat}>{cat.toUpperCase()}</option>)
                         )}
                         </select>
                     </div>
@@ -334,7 +334,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, onClose, categories
                 isOpen={isImageGenerationModalOpen}
                 onClose={() => setIsImageGenerationModalOpen(false)}
                 onImageGenerated={handleAiImageGenerated}
-                productName={productName || 'este produto'}
+                productName={productName.toUpperCase() || 'ESTE PRODUTO'}
             />
         )}
     </>

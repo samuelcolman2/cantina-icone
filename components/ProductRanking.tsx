@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Product, ProductCategory } from '../types';
 import { SavoryIcon, SweetIcon, CookieIcon, BoxIcon } from './Icons';
@@ -38,7 +39,7 @@ const ProductRanking: React.FC<ProductRankingProps> = ({ products, categories })
                 <div className="w-9 h-9 grid place-items-center bg-orange-100/70 text-[#FD7F08] rounded-lg">
                   {categoryIcons[category] || <BoxIcon />}
                 </div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Ranking de {category}</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Ranking de {category.toUpperCase()}</h3>
               </div>
               <div className="flex-grow flex items-center justify-center text-center text-slate-500 dark:text-slate-400 p-4 text-sm">
                 Nenhuma venda registrada nesta categoria.
@@ -53,7 +54,7 @@ const ProductRanking: React.FC<ProductRankingProps> = ({ products, categories })
         const otherProducts = productsWithRevenue.slice(4);
 
         const chartDataItems = topProducts.map((p, index) => ({
-          label: p.name,
+          label: p.name.toUpperCase(),
           value: p.revenue,
           color: COLORS[index % COLORS.length],
         }));
@@ -73,7 +74,7 @@ const ProductRanking: React.FC<ProductRankingProps> = ({ products, categories })
               <div className="w-9 h-9 grid place-items-center bg-orange-100/70 text-[#FD7F08] rounded-lg">
                 {categoryIcons[category] || <BoxIcon />}
               </div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Ranking de {category}</h3>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Ranking de {category.toUpperCase()}</h3>
             </div>
             
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-2">

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ref, onValue, update, increment, push, serverTimestamp } from 'firebase/database';
 import { db } from './firebase/config';
@@ -199,7 +200,7 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
                           {categories.map(category => (
                             groupedProducts[category] && groupedProducts[category].length > 0 && (
                               <section key={category}>
-                                <h2 className="text-2xl font-bold mb-4 text-slate-800 dark:text-white/90 border-b-2 border-orange-500/50 dark:border-[#FD7F08]/50 pb-2">{category}</h2>
+                                <h2 className="text-2xl font-bold mb-4 text-slate-800 dark:text-white/90 border-b-2 border-orange-500/50 dark:border-[#FD7F08]/50 pb-2">{category.toUpperCase()}</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
                                   {groupedProducts[category].map(product => (
                                     <SaleCard
@@ -231,8 +232,8 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
                                   if (!data) return null;
                                   return (
                                       <KpiCard
-                                          key={category}
-                                          title={`Faturamento ${category}`}
+                                          key={category.toUpperCase()}
+                                          title={`Faturamento ${category.toUpperCase()}`}
                                           value={BRL.format(data.revenue)}
                                           subtitle={`${data.sold} vendidos`}
                                           icon={categoryIcons[category] || <BoxIcon />}
@@ -283,7 +284,7 @@ const AppContent: React.FC<{ role: UserRole }> = ({ role }) => {
           title="Confirmar Estorno de Venda"
           message={
             <>
-              <p className="mb-2">Tem certeza que deseja estornar a venda do item <strong>"{productToUnsell.name}"</strong>?</p>
+              <p className="mb-2">Tem certeza que deseja estornar a venda do item <strong>"{productToUnsell.name.toUpperCase()}"</strong>?</p>
               <p>Esta ação irá adicionar <strong>1 unidade</strong> de volta ao estoque e subtrair <strong>{BRL.format(productToUnsell.price)}</strong> do faturamento total.</p>
             </>
           }

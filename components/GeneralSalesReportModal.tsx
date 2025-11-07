@@ -63,7 +63,7 @@ const GeneralSalesReportModal: React.FC<GeneralSalesReportModalProps> = ({ isOpe
                 onClick={() => handleProductClick(product)}
                 className="w-full text-left flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-900/40 hover:bg-orange-500/10 dark:hover:bg-orange-500/10 border border-transparent hover:border-orange-500/20 transition-all duration-200 group"
               >
-                <span className="font-medium text-slate-700 dark:text-slate-200">{product.name}</span>
+                <span className="font-medium text-slate-700 dark:text-slate-200 truncate pr-2">{product.name.toUpperCase()}</span>
                 <span className="text-slate-400 group-hover:text-orange-600 transition-colors">
                     <ChevronRightIcon className="w-5 h-5"/>
                 </span>

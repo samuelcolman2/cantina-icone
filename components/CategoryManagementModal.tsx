@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { ref, onValue, set, update, get } from 'firebase/database';
 import { db } from '../firebase/config';
@@ -49,13 +50,13 @@ const CategoryManagementModal: React.FC<CategoryManagementModalProps> = ({ isOpe
     
     const handleAddCategory = async (e: React.FormEvent) => {
         e.preventDefault();
-        const trimmedName = newCategoryName.trim();
+        const trimmedName = newCategoryName.trim().toUpperCase();
         if (!trimmedName) {
-            setError("O nome da categoria não pode ser vazio.");
+            setError("O nome da categoria не pode ser vazio.");
             return;
         }
-        if (categories.some(cat => cat.toLowerCase() === trimmedName.toLowerCase())) {
-            setError(`A categoria "${trimmedName}" já existe.`);
+        if (categories.some(cat => cat.toUpperCase() === trimmedName)) {
+            setError(`A categoria "${trimmedName.toUpperCase()}" já existe.`);
             return;
         }
 
@@ -111,7 +112,7 @@ const CategoryManagementModal: React.FC<CategoryManagementModalProps> = ({ isOpe
         if (!categoryToEdit) return;
 
         try {
-            const updates: { [key: string]: null | true } = {};
+            const updates: { [key: string]: any } = {};
             updates[`/categories/${categoryToEdit}`] = null;
             
             const productsSnapshot = await get(ref(db, 'products'));
@@ -163,13 +164,13 @@ const CategoryManagementModal: React.FC<CategoryManagementModalProps> = ({ isOpe
                     
                     <div className="flex-grow overflow-y-auto pr-2 -mr-2 space-y-2">
                         {isLoading ? <Spinner /> : categories.length > 0 ? categories.map(cat => (
-                            <div key={cat} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                <span className="font-medium text-slate-700 dark:text-slate-200">{cat}</span>
+                            <div key={cat} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                <span className="font-medium text-slate-700 dark:text-slate-200">{cat.toUpperCase()}</span>
                                 <div className="flex items-center gap-2">
                                     <button 
                                         onClick={() => openActionsModal(cat)} 
-                                        aria-label={`Ações para ${cat}`} 
-                                        className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                                        aria-label={`Ações para ${cat.toUpperCase()}`} 
+                                        className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600/80 transition-colors"
                                     >
                                         <GearIcon />
                                     </button>
@@ -218,7 +219,7 @@ const CategoryManagementModal: React.FC<CategoryManagementModalProps> = ({ isOpe
                 title="Confirmar Exclusão de Categoria"
                 message={
                     <p>
-                        Tem certeza que deseja excluir a categoria <strong>"{categoryToEdit}"</strong>? <span className="font-bold text-red-600">Todos os produtos desta categoria também serão excluídos permanentemente.</span> Esta ação não pode ser desfeita.
+                        Tem certeza que deseja excluir a categoria <strong>"{categoryToEdit.toUpperCase()}"</strong>? <span className="font-bold text-red-600">Todos os produtos desta categoria também serão excluídos permanentemente.</span> Esta ação não pode ser desfeita.
                     </p>
                 }
                 confirmText="Sim, Excluir Tudo"

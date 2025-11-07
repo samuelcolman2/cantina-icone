@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Product } from '../types';
 
@@ -38,7 +39,7 @@ const SaleCard: React.FC<SaleCardProps> = ({ product, onSell, onRequestUnsell })
 
       <div className="flex justify-between items-start mt-3">
         <div className="flex-1">
-          <div className="font-semibold text-slate-800 dark:text-white/95">{product.name}</div>
+          <div className="font-semibold text-slate-800 dark:text-white/95">{product.name.toUpperCase()}</div>
           <div className="text-slate-500 dark:text-slate-400 text-sm">Preço: {BRL.format(product.price || 0)}</div>
           <div className="text-slate-500 dark:text-slate-400 text-xs">Estoque: {product.stock}</div>
         </div>

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { ref, onValue, remove } from 'firebase/database';
 import { db } from '../firebase/config';
@@ -120,10 +121,10 @@ const ProductManagementModal: React.FC<ProductManagementModalProps> = ({ isOpen,
                     
                     <div className="flex-grow overflow-y-auto pr-2 -mr-2 space-y-2">
                         {isLoading ? <Spinner /> : products.length > 0 ? products.map(prod => (
-                            <div key={prod.id} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                <div>
-                                    <span className="font-medium text-slate-700 dark:text-slate-200">{prod.name}</span>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">{prod.category} | Estoque: {prod.stock} | {BRL.format(prod.price)}</p>
+                            <div key={prod.id} className="flex justify-between items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                <div className="truncate pr-2">
+                                    <span className="font-medium text-slate-700 dark:text-slate-200">{prod.name.toUpperCase()}</span>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">{prod.category.toUpperCase()} | Estoque: {prod.stock} | {BRL.format(prod.price)}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button 
@@ -165,7 +166,7 @@ const ProductManagementModal: React.FC<ProductManagementModalProps> = ({ isOpen,
                     title="Confirmar Exclusão de Produto"
                     message={
                         <p>
-                            Tem certeza que deseja excluir o produto <strong>"{productToDelete.name}"</strong>? Esta ação não pode ser desfeita.
+                            Tem certeza que deseja excluir o produto <strong>"{productToDelete.name.toUpperCase()}"</strong>? Esta ação não pode ser desfeita.
                         </p>
                     }
                     confirmText="Sim, Excluir"

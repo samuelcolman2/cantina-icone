@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { ProductCategory } from '../types';
 
@@ -85,7 +86,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
                     <div
                       className={`w-full rounded-t-lg transition-all duration-500 ease-out bg-gradient-to-t ${visuals?.gradient || defaultGradient} hover:opacity-90`}
                       style={{ height: `${height}%` }}
-                      title={`${category}: ${BRL.format(revenue)}`}
+                      title={`${category.toUpperCase()}: ${BRL.format(revenue)}`}
                     ></div>
                   </div>
                 );
@@ -97,7 +98,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
           <div className="flex justify-around text-center border-t-2 border-slate-200 dark:border-slate-700">
             {categories.map(category => (
               <div key={category} className="w-full text-slate-600 dark:text-slate-300 font-semibold text-xs sm:text-sm pt-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
-                {category}
+                {category.toUpperCase()}
               </div>
             ))}
           </div>

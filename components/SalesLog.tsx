@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { ref, onValue, query, orderByChild, limitToLast } from 'firebase/database';
 import { db } from '../firebase/config';
@@ -55,8 +56,8 @@ const SalesLog: React.FC = () => {
                 {isLoading ? <Spinner /> : logEntries.length > 0 ? (
                     <ul className="space-y-3">
                         {logEntries.map(entry => (
-                            <li key={entry.id} className="flex flex-col p-2 rounded-lg bg-slate-50/80 dark:bg-slate-800/50">
-                                <span className="font-semibold text-sm text-slate-700 dark:text-slate-200">{entry.productName}</span>
+                            <li key={entry.id} className="flex flex-col p-2 rounded-lg bg-slate-50/80 dark:bg-slate-900/40">
+                                <span className="font-semibold text-sm text-slate-700 dark:text-slate-200">{entry.productName.toUpperCase()}</span>
                                 <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                     <span>{BRL.format(entry.price)}</span>
                                     <span>{formatDate(entry.timestamp)}</span>

@@ -169,7 +169,7 @@ const ProductSalesReportModal: React.FC<ProductSalesReportModalProps> = ({ isOpe
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-lg p-6 sm:p-8 relative flex flex-col max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200" aria-label="Fechar modal"><CloseIcon /></button>
         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">Relatório de Vendas</h2>
-        <p className="text-slate-500 dark:text-slate-400 mb-4">{product.name}</p>
+        <p className="text-slate-500 dark:text-slate-400 mb-4">{product.name.toUpperCase()}</p>
 
         <div className="border-b border-slate-200 dark:border-slate-700">
           <div className="flex -mb-px">

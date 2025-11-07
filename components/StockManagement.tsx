@@ -112,7 +112,7 @@ const StockManagement: React.FC = () => {
                                         return (
                                             <tr key={product.id}>
                                                 <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 dark:text-slate-100 sm:pl-6">
-                                                    {product.name}
+                                                    {product.name.toUpperCase()}
                                                 </td>
                                                 <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-slate-500 dark:text-slate-400 text-center">
                                                     {product.stock}
