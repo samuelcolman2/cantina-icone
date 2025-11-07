@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ref, onValue, update } from 'firebase/database';
-import { db } from '../firebase/config';
+import { collection, getDocs } from 'firebase/firestore';
+import { db, firestore } from '../firebase/config';
 import { useAuth } from '../hooks/useAuth';
 import { UserProfile } from '../types';
 import Spinner from './Spinner';
@@ -14,11 +15,39 @@ const UserManagement: React.FC = () => {
     useEffect(() => {
         setIsLoading(true);
         const usersRef = ref(db, 'users');
-        const unsubscribe = onValue(usersRef, (snapshot) => {
-            const data = snapshot.val();
-            const usersArray: UserProfile[] = data ? Object.keys(data).map(key => ({ ...data[key], uid: key })) : [];
-            setUsers(usersArray.sort((a, b) => (a.displayName || a.email || '').localeCompare(b.displayName || b.email || '')));
-            setIsLoading(false);
+
+        const unsubscribe = onValue(usersRef, async (snapshot) => {
+            try {
+                const rtdbData = snapshot.val();
+                const usersFromRtdb: Omit<UserProfile, 'photoURL'>[] = rtdbData 
+                    ? Object.keys(rtdbData).map(key => ({ ...rtdbData[key], uid: key })) 
+                    : [];
+
+                if (usersFromRtdb.length > 0) {
+                    // Fetch photos from Firestore
+                    const photoProfilesRef = collection(firestore, 'user_profiles');
+                    const photoSnapshot = await getDocs(photoProfilesRef);
+                    const photoMap = new Map<string, string>();
+                    photoSnapshot.forEach(doc => {
+                        photoMap.set(doc.id, doc.data().photoBase64);
+                    });
+
+                    // Merge photo data into users
+                    const usersWithPhotos: UserProfile[] = usersFromRtdb.map(user => ({
+                        ...user,
+                        photoURL: photoMap.get(user.uid) || null,
+                    }));
+                    
+                    setUsers(usersWithPhotos.sort((a, b) => (a.displayName || a.email || '').localeCompare(b.displayName || b.email || '')));
+                } else {
+                    setUsers([]);
+                }
+
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            } finally {
+                setIsLoading(false);
+            }
         }, (error) => {
             console.error(error);
             setIsLoading(false);
@@ -68,7 +97,7 @@ const UserManagement: React.FC = () => {
                                             <div className="flex items-center">
                                                 <div className="h-10 w-10 flex-shrink-0">
                                                     {user.photoURL ? (
-                                                      <img className="h-10 w-10 rounded-full object-cover" src={user.photoURL} alt="" />
+                                                      <img className="h-10 w-10 rounded-full object-cover" src={user.photoURL} alt={`Foto de ${user.displayName || user.email}`} />
                                                     ) : (
                                                       <UserIcon className="h-10 w-10 text-slate-300 bg-slate-100 rounded-full p-2"/>
                                                     )}
