@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { Product, ProductCategory } from '../types';
 import { SavoryIcon, SweetIcon, CookieIcon, BoxIcon } from './Icons';
@@ -10,11 +9,12 @@ const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' 
 interface ProductRankingProps {
   products: Product[];
   categories: ProductCategory[];
+  onCategoryClick?: (category: ProductCategory) => void;
 }
 
 const COLORS = ['#0ea5e9', '#3b82f6', '#f97316', '#10b981', '#8b5cf6', '#6b7280']; // sky, blue, orange, green, violet, gray for "Others"
 
-const ProductRanking: React.FC<ProductRankingProps> = ({ products, categories }) => {
+const ProductRanking: React.FC<ProductRankingProps> = ({ products, categories, onCategoryClick }) => {
   const categoryIcons: Record<ProductCategory, React.ReactNode> = {
     Salgados: <SavoryIcon />,
     Doces: <SweetIcon />,
@@ -69,7 +69,11 @@ const ProductRanking: React.FC<ProductRankingProps> = ({ products, categories })
         }
         
         return (
-          <div key={category} className="bg-white dark:bg-[#3a475b] text-slate-800 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-5 flex flex-col">
+          <div 
+            key={category} 
+            onClick={() => onCategoryClick && onCategoryClick(category)}
+            className={`bg-white dark:bg-[#3a475b] text-slate-800 dark:text-slate-100 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-5 flex flex-col ${onCategoryClick ? 'cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all duration-200' : ''}`}
+          >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-9 h-9 grid place-items-center bg-orange-100/70 text-[#FD7F08] rounded-lg">
                 {categoryIcons[category] || <BoxIcon />}

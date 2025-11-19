@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { ProductCategory } from '../types';
 
@@ -13,9 +12,10 @@ interface ChartData {
 interface BarChartProps {
   data: Record<ProductCategory, ChartData>;
   categories: ProductCategory[];
+  onCategoryClick?: (category: ProductCategory) => void;
 }
 
-const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
+const BarChart: React.FC<BarChartProps> = ({ data, categories, onCategoryClick }) => {
   const revenues = categories.map(cat => data[cat]?.revenue || 0);
   const maxRevenue = Math.max(...revenues);
 
@@ -44,13 +44,36 @@ const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
     return yAxisMax - (i * (yAxisMax / numGridLines));
   });
 
-  const categoryVisuals: Record<ProductCategory, { gradient: string; }> = {
-    Salgados: { gradient: 'from-orange-500 to-orange-400' },
-    Doces: { gradient: 'from-amber-500 to-amber-400' },
-    Biscoitos: { gradient: 'from-yellow-600 to-yellow-500' },
+  // Define a diverse palette of gradients to ensure bars have different colors
+  const gradients = [
+    'from-blue-500 to-blue-400',      // Blue
+    'from-emerald-500 to-emerald-400', // Green
+    'from-violet-500 to-violet-400',   // Purple
+    'from-pink-500 to-pink-400',       // Pink
+    'from-cyan-500 to-cyan-400',       // Cyan
+    'from-rose-500 to-rose-400',       // Rose/Red
+    'from-amber-500 to-amber-400',     // Amber
+    'from-indigo-500 to-indigo-400',   // Indigo
+    'from-lime-500 to-lime-400',       // Lime
+    'from-fuchsia-500 to-fuchsia-400'  // Fuchsia
+  ];
+
+  // Specific overrides to maintain brand/thematic consistency for known categories
+  const specificGradients: Record<string, string> = {
+    'SALGADOS': 'from-orange-500 to-orange-400',
+    'DOCES': 'from-pink-500 to-pink-400',
+    'BISCOITOS': 'from-amber-500 to-amber-400',
+    'BEBIDAS': 'from-sky-500 to-sky-400',
   };
-  
-  const defaultGradient = 'from-sky-500 to-sky-400';
+
+  const getGradient = (category: string, index: number) => {
+    const upperCat = category.toUpperCase();
+    if (specificGradients[upperCat]) {
+        return specificGradients[upperCat];
+    }
+    // Use modulus to cycle through gradients for other categories
+    return gradients[index % gradients.length];
+  };
 
   return (
     <div className="bg-white dark:bg-[#3a475b] p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
@@ -75,19 +98,22 @@ const BarChart: React.FC<BarChartProps> = ({ data, categories }) => {
             
             {/* Bars Container */}
             <div className="absolute inset-0 flex justify-around items-end gap-2 sm:gap-4 text-center px-1 sm:px-2">
-              {categories.map(category => {
+              {categories.map((category, index) => {
                 const revenue = data[category]?.revenue || 0;
                 const height = yAxisMax > 0 ? (revenue / yAxisMax) * 100 : 0;
-                const visuals = categoryVisuals[category];
+                const gradientClass = getGradient(category, index);
 
                 return (
                   <div key={category} className="flex flex-col items-center justify-end h-full w-full">
                     <div className="text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm mb-1">{BRL.format(revenue)}</div>
-                    <div
-                      className={`w-full rounded-t-lg transition-all duration-500 ease-out bg-gradient-to-t ${visuals?.gradient || defaultGradient} hover:opacity-90`}
+                    <button
+                      onClick={() => onCategoryClick && onCategoryClick(category)}
+                      className={`w-full rounded-t-lg transition-all duration-500 ease-out bg-gradient-to-t ${gradientClass} ${onCategoryClick ? 'cursor-pointer hover:opacity-90 hover:scale-[1.02]' : ''}`}
                       style={{ height: `${height}%` }}
                       title={`${category.toUpperCase()}: ${BRL.format(revenue)}`}
-                    ></div>
+                      type="button"
+                      aria-label={`Ver detalhes de ${category}`}
+                    ></button>
                   </div>
                 );
               })}

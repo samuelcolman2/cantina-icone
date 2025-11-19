@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import {
@@ -38,16 +39,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isAdmin })
   return (
     <>
       <aside className={`relative bg-white dark:bg-[#222b39] text-slate-700 dark:text-white flex flex-col transition-all duration-300 ease-in-out sticky top-0 h-screen ${isCollapsed ? 'w-[72px]' : 'w-64'}`}>
-        <div className={`flex items-center p-4 border-b border-slate-200 dark:border-white/10 h-24 shrink-0 ${isCollapsed ? 'justify-center' : 'justify-start'}`}>
-          <div className={`flex items-center gap-2 overflow-hidden`}>
+        <div className={`flex items-center p-4 border-b border-slate-200 dark:border-white/10 h-24 shrink-0 ${isCollapsed ? 'justify-center' : 'justify-center'}`}>
+          <div className={`flex items-center justify-center overflow-hidden w-full`}>
               <img
-                  src="https://storage.googleapis.com/ecdt-logo-saida/1ebe52af502e25d3521cb9dad62bb72f6bc1c347353cdda5fa381ef8627a9eb8/COLEGIO-E-CURSO-ICONE.webp"
+                  src="https://iconecolegioecurso.com.br/wp-content/uploads/2022/08/xlogo_icone_site.png.pagespeed.ic_.QgXP3GszLC.webp"
                   alt="Logo Ícone Colégio e Curso"
-                  className="h-10 w-10 flex-shrink-0"
+                  className={`object-contain transition-all duration-200 ${isCollapsed ? 'h-8 w-auto' : 'h-12 w-auto'}`}
               />
-              <span className={`font-bold text-lg whitespace-nowrap text-slate-800 dark:text-white transition-all duration-200 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100 w-auto ml-1'}`}>
-                  CANTINA ICONE
-              </span>
           </div>
         </div>
 
